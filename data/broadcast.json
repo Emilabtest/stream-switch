@@ -1,0 +1,8 @@
+{
+  "destination": "facebook",
+  "rtmp_url": "rtmps://live-api-s.facebook.com:443/rtmp",
+  "stream_key": "",
+  "title": "Saturday Worship Service",
+  "state": "idle",
+  "started_at": null
+}

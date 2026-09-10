@@ -1,0 +1,13 @@
+.venv/
+__pycache__/
+*.pyc
+*.log
+cert/
+output/
+media/
+dist/
+build/
+recovery_build/
+stage_*/
+clean_templates/
+LeiturgiaServer.original.exe
