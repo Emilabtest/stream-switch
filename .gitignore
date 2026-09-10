@@ -1,6 +1,7 @@
 .venv/
 __pycache__/
 *.pyc
+!pymod/*.pyc
 *.log
 cert/
 output/
