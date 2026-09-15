@@ -73,8 +73,8 @@ def _ensure_config():
         'cloud_enabled': False,
         'cloud_url': '',
         'cloud_token': '',
-        'enable_self_update': True,
-        'update_url': 'https://github.com/Emilabtest/ecb-app/releases/latest/download',
+        'enable_self_update': False,
+        'update_url': '',
         'owner_email': '',
         'paymongo_secret': '',
         'paymongo_publishable': '',
@@ -594,6 +594,14 @@ live_input.init_app(app)
 import bible
 bible.init_app(app)
 
+# Real RTMP broadcast endpoints (additive; app.pyc untouched).
+import broadcast_wiring
+broadcast_wiring.init_app(app)
+
+# 6-output mapping (4x HDMI assignable + USB/Network fixed program).
+import outputs_config
+outputs_config.init_app(app)
+
 
 def _spawn_stream_child():
     """Launch the dedicated live-stream daemon as a SEPARATE process.
@@ -641,11 +649,49 @@ def _clean_tmp():
             continue
 
 
+def _run_audio_monitor():
+    """Spawn the standalone audio-level service (port 5081) if not already up."""
+    try:
+        import socket as _sock
+        import subprocess as _sp
+        import sys as _sys
+        import os as _osp
+        _probe = _sock.socket(_sock.AF_INET, _sock.SOCK_STREAM)
+        try:
+            _up = _probe.connect_ex(('127.0.0.1', 5081)) == 0
+        finally:
+            _probe.close()
+        if _up:
+            return
+        _here = _osp.path.dirname(_osp.path.abspath(__file__))
+        if getattr(_sys, 'frozen', False):
+            _sp.Popen(
+                [_sys.executable, '--audio-worker'],
+                creationflags=0x08000000 if _osp.name == 'nt' else 0,
+            )
+        else:
+            _sp.Popen(
+                [_sys.executable, '-u', _osp.path.join(_here, 'audio_monitor_server.py')],
+                cwd=_here,
+                creationflags=0x08000000 if _osp.name == 'nt' else 0,
+            )
+    except Exception:
+        pass
+
+
 if __name__ == '__main__':
+    if '--audio-worker' in sys.argv:
+        try:
+            import audio_monitor_server
+            audio_monitor_server.main()
+        except Exception:
+            pass
+        sys.exit(0)
     _ensure_dirs()
     _clean_tmp()
     # Allow an alternate port (LEITURGIA_PORT) for dev/test without clobbering
     # the live server on 5001.
     import os as _os
     _port = int(_os.environ.get('LEITURGIA_PORT', '5001'))
+    _run_audio_monitor()
     socketio.run(app, host='0.0.0.0', port=_port, debug=False)

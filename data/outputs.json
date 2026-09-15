@@ -1,0 +1,10 @@
+{
+  "hdmi": {
+    "1": "ch5",
+    "2": "ch1",
+    "3": "ch2",
+    "4": "ch3"
+  },
+  "usb": "program",
+  "network": "program"
+}

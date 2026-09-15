@@ -259,6 +259,9 @@
     .sc-cut { background: #57252b; border-color: #87404a; }
     .sc-auto { background: var(--accent-lt); color: #111923; border-color: var(--accent-lt); }
     .sc-black { background: #111111; border-color: #3a4659; color: #cfd6e0; }
+    .sc-macro { background: #1c2d3a; border-color: #3f5b72; color: #cfe4f2; min-width: 42px; }
+    .sc-macro.macro-live { background: #1f4a2a; border-color: #3a7a4a; color: #7fe0a8; }
+    .sc-macro-label { font-size: 10px; font-weight: 800; color: var(--muted); letter-spacing: .1em; text-transform: uppercase; padding: 0 6px; display: flex; align-items: center; }
     .sc-source { background: #1c2d3a; border-color: #3f5b72; color: #cfe4f2; }
     .sc-source-panel {
       display: flex;
@@ -284,6 +287,43 @@
     .sc-source-opt:hover { background: #243044; }
     .sc-source-opt.assigned { background: #14532d; border-color: #3ecf6d; color: #eafff0; }
     .sc-source-opt small { color: var(--muted); font-weight: 400; }
+    .sc-direct {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+      padding-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+    .sc-direct input {
+      width: 100%;
+      padding: 8px 9px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: #10151d;
+      color: var(--text);
+      font: inherit;
+      font-size: 12px;
+    }
+    .sc-direct .cp-btn { flex: 0 0 auto; margin: 0; }
+    .sc-out-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 6px;
+    }
+    .sc-out {
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+      padding: 7px 4px;
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .sc-out:hover { background: #243044; }
+    .sc-out.picked { background: #14532d; border-color: #3ecf6d; color: #eafff0; }
 
     .aud-box {
       background: var(--surface);
@@ -400,6 +440,9 @@
     .cp-dest { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-bottom: 10px; }
     .cp-dest button { border: 1px solid var(--border); background: var(--card); color: var(--muted); padding: 8px; border-radius: 6px; font-weight: 700; font-size: 12px; cursor: pointer; }
     .cp-dest button.active { background: var(--accent-lt); color: #111923; border-color: var(--accent-lt); }
+    .ch-row { display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 10px; }
+    .ch-row button { border: 1px solid var(--border); background: var(--card); color: var(--muted); padding: 6px 0; border-radius: 5px; font-weight: 700; font-size: 11px; cursor: pointer; font-family: inherit; }
+    .ch-row button.active { background: var(--accent-lt); color: #111923; border-color: var(--accent-lt); }
     .cp-field { display: grid; gap: 4px; margin-bottom: 8px; }
     .cp-field input {
       width: 100%;
@@ -415,6 +458,7 @@
     .cp-brow { display: flex; gap: 8px; align-items: center; }
     .cp-brow .cp-btn { flex: 1; }
     #cpBcastGo.live { background: #57252b; border-color: #87404a; }
+    #outAllBtn.live { background: #1f4a2a; border-color: #3a7a4a; color: #7fe0a8; }
     .cp-pill { border-radius: 20px; padding: 3px 10px; font-size: 10px; font-weight: 800; letter-spacing: .1em; white-space: nowrap; }
     .cp-pill.idle { background: #3a3f4d; color: #cfd6e0; }
     .cp-pill.connecting { background: #4a3d1f; color: #e8c06a; }
@@ -440,12 +484,10 @@
 <body>
 
 <header class="sc-header">
-  <div class="sc-brand">LIGHT <span>WORSHIP</span> APP</div>
+  <div class="sc-brand">LIGHT <span>STREAM</span> SWITCH APP</div>
   <div class="sc-title">Stream Console</div>
-  <span class="sc-channel-badge">CH{{ channel }}</span>
   <div class="sc-spacer"></div>
   <span id="scConnPill" class="bad">Offline</span>
-  <button class="sc-link" onclick="window.open('/','ecb_console')">Open Console</button>
 </header>
 
 <div class="sc-body">
@@ -465,16 +507,16 @@
     <span class="mv-label">CH1</span>
     <iframe src="/ch1" allow="autoplay; fullscreen"></iframe>
   </div>
-  <div class="mv-tile mv-2">
-    <span class="mv-label">CH2 · Order of Service</span>
+<div class="mv-tile mv-2">
+        <span class="mv-label">CH2</span>
     <iframe src="/ch2" allow="autoplay; fullscreen"></iframe>
   </div>
-  <div class="mv-tile mv-3">
-    <span class="mv-label">CH3 · Timer</span>
+<div class="mv-tile mv-3">
+        <span class="mv-label">CH3</span>
     <iframe src="/ch3" allow="autoplay; fullscreen"></iframe>
   </div>
-  <div class="mv-tile mv-4">
-    <span class="mv-label">CH4 · Announcement</span>
+<div class="mv-tile mv-4">
+        <span class="mv-label">CH4</span>
     <iframe src="/ch4" allow="autoplay; fullscreen"></iframe>
   </div>
   <div class="mv-tile mv-5">
@@ -518,19 +560,104 @@
       <button class="sc-key sc-auto">AUTO</button>
       <button class="sc-key sc-black">BLACK</button>
     </div>
+    <div class="sc-switcher" style="margin-top:6px">
+      <span class="sc-macro-label">MACRO</span>
+      <button class="sc-key sc-macro" data-macro="1">1</button>
+      <button class="sc-key sc-macro" data-macro="2">2</button>
+      <button class="sc-key sc-macro" data-macro="3">3</button>
+      <button class="sc-key sc-macro" data-macro="4">4</button>
+      <button class="sc-key sc-macro" data-macro="5">5</button>
+      <button class="sc-key sc-macro" data-macro="6">6</button>
+      <button class="sc-key sc-macro" data-macro="7">7</button>
+      <button class="sc-key sc-macro" data-macro="8">8</button>
+      <button class="sc-key sc-macro" data-macro="9">9</button>
+      <button class="sc-key sc-macro" data-macro="10">10</button>
+      <span class="sc-sep"></span>
+      <button class="sc-key sc-macro" data-macro="0" style="background:#3a4659;border-color:#57657a;">CLR</button>
+    </div>
   </div>
 
   <div class="sc-side">
     <button class="cp-btn" id="cpBcastToggle">Broadcast Settings</button>
+    <div class="cp-section" id="cpBcastSec" style="display:none">
+      <div class="cp-label">Broadcast · Facebook / YouTube</div>
+      <div class="cp-dest">
+        <button class="active" data-dest="facebook" id="cpDestFb">Facebook</button>
+        <button data-dest="youtube" id="cpDestYt">YouTube</button>
+      </div>
+      <div class="cp-field"><label>Broadcast title</label><input id="cpBcastTitle" type="text" placeholder="e.g. Saturday Worship Service"></div>
+      <div class="cp-field"><label>RTMP server URL</label><input id="cpBcastRtmp" type="text" placeholder="rtmps://live-api-s.facebook.com:443/rtmp"></div>
+      <div class="cp-field"><label>Stream key</label><input id="cpBcastKey" type="password" placeholder="Paste stream key from the platform"></div>
+      <div class="cp-brow">
+        <button class="cp-btn gold" id="cpBcastGo">&#9654; Start broadcast</button>
+        <span class="cp-pill idle" id="cpBcastPill">OFFLINE</span>
+      </div>
+      <div class="cp-note" id="cpBcastNote">REAL PUSH — ffmpeg magpu-push ng PGM feed sa RTMP. Ilagay ang stream key bago mag-Start.</div>
+    </div>
+    <button class="cp-btn" id="outToggle">OUTPUT</button>
+    <div class="cp-section" id="scOutputsSec" style="display:none">
+      <div class="cp-label">Outputs · 4× HDMI + USB + Network</div>
+      <div class="cp-brow" style="margin-bottom:10px">
+        <button class="cp-btn gold" id="outAllBtn" style="flex:1;font-weight:800;letter-spacing:.08em">● OUTPUT</button>
+        <span class="cp-pill idle" id="outAllState">OFFLINE</span>
+      </div>
+      <div class="cp-note" style="margin-bottom:8px">HDMI 1-4: assign mo sa program o ch1–10. USB at Network: fixed program, connect sa ibang PC.</div>
+      <div class="cp-field"><label>HDMI 1</label><select id="outHdmi1"></select> <button class="cp-btn" data-out="1" onclick="pushHdmi(this)">Push</button></div>
+      <div class="cp-field"><label>HDMI 2</label><select id="outHdmi2"></select> <button class="cp-btn" data-out="2" onclick="pushHdmi(this)">Push</button></div>
+      <div class="cp-field"><label>HDMI 3</label><select id="outHdmi3"></select> <button class="cp-btn" data-out="3" onclick="pushHdmi(this)">Push</button></div>
+      <div class="cp-field"><label>HDMI 4</label><select id="outHdmi4"></select> <button class="cp-btn" data-out="4" onclick="pushHdmi(this)">Push</button></div>
+      <div class="cp-field"><label>USB — Program (direct USB-to-USB, no IP)</label>
+        <select id="outUsbPort"><option value="">— isaksak ang USB cable, tapos Refresh —</option></select>
+        <button class="cp-btn" onclick="refreshUsbPorts()">Refresh</button>
+        <button class="cp-btn gold" id="outUsbGo">Start USB</button>
+        <span class="cp-pill idle" id="outUsbState">OFFLINE</span>
+      </div>
+      <div class="cp-note">Other PC: patakbuhin ang <code>tools/usb_receiver.py COMx</code> — makikita nya ang program via USB input, walang IP.</div>
+      <div class="cp-field"><label>Network — Program (IP)</label><span class="cp-pill idle" id="outNetUrl">—</span> <button class="cp-btn" onclick="copyOut('net')">Copy link</button></div>
+      <div class="cp-note" id="outNote"></div>
+    </div>
     <button class="sc-key sc-source" id="scSourceBtn">SOURCE</button>
     <div class="sc-source-panel" id="scSourcePanel" style="display:none">
       <div class="sc-source-title">Assign input &middot; <b id="scSourceCh">CH1</b></div>
       <button class="sc-source-opt" data-src="hdmi">HDMI <small>(capture card USB)</small></button>
-      <button class="sc-source-opt" data-src="ndi">NDI</button>
       <button class="sc-source-opt" data-src="direct">Direct app <small>(same network)</small></button>
+      <div class="sc-direct" id="scDirectBox" style="display:none">
+        <span class="sc-source-title">Sender app address</span>
+        <input id="scDirectIp" type="text" placeholder="192.168.1.100 (or 192.168.1.100:5001)" autocomplete="off">
+        <div class="cp-brow">
+          <button class="cp-btn gold" id="scDirectGo">Connect</button>
+        </div>
+        <div class="cp-note" id="scDirectHint">Type the IP of the LIGHT WORSHIP app that sends the input. May lagay na optional ang port (IP:port).</div>
+      </div>
+      <div id="scHdmiBox" style="display:none">
+        <span class="sc-source-title">Detected HDMI inputs · <span id="scHdmiCount"></span></span>
+        <div class="sc-out-grid" id="scHdmiList"></div>
+        <button class="sc-source-opt" type="button" id="scHdmiRescan">&#8635; Rescan</button>
+      </div>
+      <button class="cp-btn" id="scAssignBtn" type="button">Channel Assign</button>
+    </div>
+    <div class="cp-section" id="scAssignPanel" style="display:none">
+      <div class="cp-label">Channel Assign</div>
+      <div class="cp-dest">
+<button type="button" class="active" data-atype="hdmi" id="scAssignHdmi">HDMI</button>
+      <button type="button" data-atype="direct" id="scAssignDirect">Direct</button>
+      </div>
+      <div class="ch-row" id="scDestRow"></div>
+      <button type="button" class="cp-btn" id="scAssignClear">Clear input (alisin)</button>
+      <div class="sc-direct" id="scAsgDirectBox" style="display:none">
+        <span class="sc-source-title">IP ng sender app (Direct)</span>
+        <input id="scAsgIp" type="text" placeholder="192.168.1.100 or 192.168.1.100:5001" autocomplete="off">
+        <div class="cp-brow">
+          <button class="cp-btn gold" id="scAsgGo">Connect</button>
+        </div>
+        <div class="cp-note">I-type ang IP ng LIGHT WORSHIP app na nagpapadala ng input. Kung walang port na nilagay, susubukan ang 80, 5001, 5070, 5890, 8080.</div>
+      </div>
+      <div class="sc-source-title" id="scAssignTitle">Received inputs</div>
+      <div class="sc-out-grid" id="scAssignList"></div>
+      <div class="cp-note" id="scAssignHint"></div>
     </div>
     <div class="aud-box">
-      <div class="aud-head"><span class="aud-brand">LIGHT WORSHIP <b>AUDIO MONITOR</b></span><span class="aud-conn">&#9679; Connected</span></div>
+      <div class="aud-head"><span class="aud-brand">LIGHT STREAM <b>AUDIO MONITOR</b></span><span class="aud-conn">&#9679; Connected</span></div>
       <div class="aud-group">
         <div class="aud-gtitle"><span>AUDIO INPUT</span><span class="aud-gstate" id="audInState">ACTIVE</span></div>
         <div class="aud-row"><span class="aud-mk">L</span><div class="aud-bar" id="audInL"><i></i></div><span class="aud-num" id="audInLn">0</span></div>
@@ -548,22 +675,6 @@
         <button class="aud-btn" id="audSpkReset">Reset Speaker</button>
       </div>
     </div>
-    <div class="cp-section" id="cpBcastSec" style="display:none">
-      <div class="cp-label">Broadcast · Facebook / YouTube</div>
-      <div class="cp-dest">
-        <button class="active" data-dest="facebook" id="cpDestFb">Facebook</button>
-        <button data-dest="youtube" id="cpDestYt">YouTube</button>
-      </div>
-      <div class="cp-field"><label>Broadcast title</label><input id="cpBcastTitle" type="text" placeholder="e.g. Saturday Worship Service"></div>
-      <div class="cp-field"><label>RTMP server URL</label><input id="cpBcastRtmp" type="text" placeholder="rtmps://live-api-s.facebook.com:443/rtmp"></div>
-      <div class="cp-field"><label>Stream key</label><input id="cpBcastKey" type="password" placeholder="Paste stream key from the platform"></div>
-      <div class="cp-brow">
-        <button class="cp-btn gold" id="cpBcastGo">&#9654; Start broadcast</button>
-        <span class="cp-pill idle" id="cpBcastPill">OFFLINE</span>
-      </div>
-      <div class="cp-note">TEST MODE &mdash; simulated broadcast status pa lang. RTMP + stream key ay para sa real push (OBS / ffmpeg) mamaya.</div>
-    </div>
-
     <div class="cp-section">
       <div class="cp-label">Stream status</div>
       <div class="cp-row"><span>Connection</span><b id="cpConn" class="cp-st bad">Offline</b></div>
@@ -624,12 +735,23 @@
     $('cpBcastGo').classList.toggle('live', live);
     var dest = (s.destination === 'youtube') ? 'YouTube' : 'Facebook';
     if (live) {
-      var mG = pgmFrame.src.match(/\/ch(\d+)/);
-      $('cpBcastPill').textContent = '● LIVE · ' + dest + (mG ? ' · CH' + mG[1] : '');
+      var pgm = s.pgm_channel || '';
+      $('cpBcastPill').textContent = '● LIVE · ' + dest + (pgm ? ' · ' + pgm.toUpperCase() : '');
       $('cpBcastPill').className = 'cp-pill live';
     }
     else if (connecting) { $('cpBcastPill').textContent = 'CONNECTING…'; $('cpBcastPill').className = 'cp-pill connecting'; }
-    else { $('cpBcastPill').textContent = 'OFFLINE'; $('cpBcastPill').className = 'cp-pill idle'; }
+    else if (bcState === 'error') {
+      $('cpBcastPill').textContent = 'ERROR';
+      $('cpBcastPill').className = 'cp-pill idle';
+      if (s.message) toast('Broadcast: ' + s.message);
+    }
+    else { $('cpBcastPill').textContent = s.ffmpeg === false ? 'NO FFMPEG' : 'OFFLINE'; $('cpBcastPill').className = 'cp-pill idle'; }
+  }
+
+  async function postPgm(ch) {
+    try {
+      await fetch('/api/broadcast/pgm', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channel: ch }) });
+    } catch (e) {}
   }
 
   async function loadBroadcast() {
@@ -653,6 +775,7 @@
         title: $('cpBcastTitle').value || '',
         rtmp_url: $('cpBcastRtmp').value || '',
         stream_key: $('cpBcastKey').value || '',
+        source_mode: 'screen',
       };
       const r = await fetch('/api/broadcast/config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
       if (!r.ok) throw new Error('HTTP ' + r.status);
@@ -683,8 +806,9 @@
     $('cpBcastPill').className = 'cp-pill connecting';
     try {
       const r = await fetch('/api/broadcast/start', { method: 'POST' });
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      toast('Broadcast started (simulated)');
+      const j = await r.json().catch(function () { return {}; });
+      if (!r.ok || j.ok === false) throw new Error((j && j.message) || ('HTTP ' + r.status));
+      toast('Broadcast LIVE — pushing PGM');
       setTimeout(pollBroadcast, 1200);
     } catch (e) { toast('Broadcast start failed: ' + e.message); pollBroadcast(); }
   }
@@ -750,6 +874,12 @@
     sec.style.display = open ? 'none' : '';
     this.classList.toggle('active', !open);
   };
+  $('outToggle').onclick = function () {
+    var sec = $('scOutputsSec');
+    var open = sec.style.display !== 'none';
+    sec.style.display = open ? 'none' : '';
+    this.classList.toggle('active', !open);
+  };
   $('cpDestFb').onclick = function () { setDest('facebook'); saveBroadcast(); };
   $('cpDestYt').onclick = function () { setDest('youtube'); saveBroadcast(); };
   $('cpBcastGo').onclick = toggleBroadcast;
@@ -771,8 +901,135 @@
   pollBroadcast();
   setInterval(pollBroadcast, 5000);
   setInterval(refreshActiveSlide, 8000);
+  initOutputs();
 
-  // ── Source select (1-10 keys) → set preview (PVW) ───────────────────────────
+  // ── 6 outputs (4× HDMI assignable + USB/Network program) ────────────────
+  const VALID_OUT_TARGETS = ['program','ch1','ch2','ch3','ch4','ch5','ch6','ch7','ch8','ch9','ch10'];
+  let outInfo = null;
+  function fillHdmiSelects(cur) {
+    for (let i=1;i<=4;i++) {
+      const el = $('outHdmi'+i);
+      if (!el) continue;
+      const keep = (cur && cur[i]) || el.value || 'program';
+      el.innerHTML='';
+      VALID_OUT_TARGETS.forEach(function(v){
+        const o=document.createElement('option'); o.value=v; o.textContent=v;
+        el.appendChild(o);
+      });
+      el.value = keep;
+      el.onchange = function(){ saveHdmi(i, el.value); };
+    }
+  }
+  async function initOutputs(){
+    try{
+      const r=await fetch('/api/outputs'); if(!r.ok) return;
+      outInfo=await r.json();
+      fillHdmiSelects(outInfo.hdmi);
+      $('outNetUrl').textContent = outInfo.urls.network_program;
+      $('outNote').textContent = 'Network: buksan ang link sa ibang PC via same WiFi/LAN.';
+    }catch(e){}
+    refreshUsbPorts(); pollUsb();
+    setInterval(pollUsb, 3000);
+  }
+  async function saveHdmi(port, target){
+    try{
+      const r=await fetch('/api/outputs/hdmi',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({port:String(port),target:target})});
+      const j=await r.json(); if(!j.ok) throw new Error(j.message||'save failed');
+      toast('HDMI '+port+' → '+target);
+    }catch(e){ toast('HDMI save: '+e.message); }
+  }
+  async function pushHdmi(btn){
+    const port=btn.getAttribute('data-out');
+    const sel=$('outHdmi'+port); const target=sel?sel.value:'program';
+    const ch = target==='program' ? 'ch1' : target;
+    // Use existing output push if monitors are available
+    try{
+      const mons=await fetch('/api/output/monitors').then(r=>r.json());
+      const mon = (mons.monitors||[])[parseInt(port)-1] || (mons.monitors||[])[0];
+      if(!mon){ toast('No monitor found for HDMI '+port); return; }
+      const r=await fetch('/api/output/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:ch,monitor:mon.index})});
+      const j=await r.json(); if(j.status!=='ok') throw new Error(j.message||'push failed');
+      toast('HDMI '+port+' pushed '+target+' to '+mon.label);
+    }catch(e){ toast('Push HDMI '+port+': '+e.message); }
+  }
+  function copyOut(which){
+    const url = which==='net' ? $('outNetUrl').textContent : '';
+    if(!url || url.indexOf('USB direct')===0){ toast('USB direct — no link, use Start USB'); return; }
+    if(navigator.clipboard) navigator.clipboard.writeText(url).then(()=>toast('Copied '+url)).catch(()=>{});
+    else { prompt('Copy link', url); }
+  }
+  async function refreshUsbPorts(){
+    try{
+      const r=await fetch('/api/usb/ports'); const j=await r.json();
+      const sel=$('outUsbPort'); const cur=sel.value;
+      sel.innerHTML='';
+      const ports=j.ports||[];
+      if(!ports.length){
+        const o=document.createElement('option'); o.value=''; o.textContent=j.error||'— no USB device —';
+        sel.appendChild(o);
+      } else {
+        ports.forEach(function(p){
+          const o=document.createElement('option'); o.value=p.device; o.textContent=p.device+' — '+(p.description||'');
+          sel.appendChild(o);
+        });
+      }
+      if(cur) sel.value=cur;
+    }catch(e){}
+  }
+  async function pollUsb(){
+    try{
+      const r=await fetch('/api/usb/program/status'); const j=await r.json();
+      const live=j.state==='live'; $('outUsbState').textContent = live ? ('● LIVE '+ (j.port||'')) : (j.state==='error' ? 'ERROR' : 'OFFLINE');
+      $('outUsbState').className = live ? 'cp-pill live' : 'cp-pill idle';
+      $('outUsbGo').textContent = live ? 'Stop USB' : 'Start USB';
+    }catch(e){}
+  }
+  $('outUsbGo').onclick = async function(){
+    const live=this.textContent.indexOf('Stop')!==-1;
+    if(live){
+      await fetch('/api/usb/program/stop',{method:'POST'}); toast('USB stopped'); pollUsb(); return;
+    }
+    const port=$('outUsbPort').value;
+    if(!port){ toast('Piliin ang USB port (isaksak ang USB-to-USB cable)'); return; }
+    const r=await fetch('/api/usb/program/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({port:port})});
+    const j=await r.json().catch(()=>({})); if(!r.ok||!j.ok){ toast('USB start: '+(j.message||r.status)); return; }
+    toast(j.message); pollUsb();
+  };
+  // OUTPUT button — push all HDMI + USB + show network link
+  $('outAllBtn').onclick = async function(){
+    const btn=this; const wasLive=btn.classList.contains('live');
+    if(wasLive){
+      // Stop all: close HDMI windows and stop USB
+      for(let i=1;i<=4;i++){
+        const sel=$('outHdmi'+i); const ch=sel && sel.value ? (sel.value==='program'?'ch1':sel.value) : 'ch1';
+        try{ await fetch('/api/output/close',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:ch})}); }catch(e){}
+      }
+      try{ await fetch('/api/usb/program/stop',{method:'POST'}); }catch(e){}
+      btn.textContent='● OUTPUT'; btn.classList.remove('live'); $('outAllState').textContent='OFFLINE'; $('outAllState').className='cp-pill idle';
+      toast('Outputs stopped'); pollUsb(); return;
+    }
+    btn.textContent='● OUTPUT — LIVE'; btn.classList.add('live'); $('outAllState').textContent='● LIVE'; $('outAllState').className='cp-pill live';
+    // Push HDMI 1-4
+    for(let i=1;i<=4;i++){
+      const sel=$('outHdmi'+i); const target=sel?sel.value:'program'; const ch=target==='program'?'ch1':target;
+      try{
+        const mons=await fetch('/api/output/monitors').then(r=>r.json());
+        const mon=(mons.monitors||[])[i-1] || (mons.monitors||[])[0];
+        if(!mon) continue;
+        await fetch('/api/output/push',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({channel:ch,monitor:mon.index})});
+      }catch(e){}
+      await new Promise(r=>setTimeout(r,400));
+    }
+    // Start USB if port selected
+    const usbPort=$('outUsbPort').value;
+    if(usbPort){
+      try{ await fetch('/api/usb/program/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({port:usbPort})}); }catch(e){}
+    }
+    toast('OUTPUT LIVE — HDMI 1-4 + USB/Network program');
+    pollUsb();
+  };
+
+  // ── Source select (1-10 keys) → set preview (PVW) ONLY ─────────────────────
   const pvwFrame = document.querySelector('.mv-pvw iframe');
   const pgmFrame = document.querySelector('.mv-pgm iframe');
   const keysAll  = Array.prototype.slice.call(document.querySelectorAll('.sc-key[data-ch]'));
@@ -780,11 +1037,12 @@
   keysAll.forEach(function (key) {
     key.addEventListener('click', function () {
       var n = key.getAttribute('data-ch');
+      directTarget = n;
       pvwFrame.src = '/ch' + n;
-      keysAll.forEach(function (k) {
-        k.classList.remove('key-pvw');
-      });
+      keysAll.forEach(function (k) { k.classList.remove('key-pvw'); });
       key.classList.add('key-pvw');
+      if (typeof paintSourcePanel === 'function' && $('scSourcePanel').style.display !== 'none') paintSourcePanel();
+      if (typeof refreshAssignList === 'function' && $('scAssignPanel').style.display !== 'none') refreshAssignList();
     });
   });
 
@@ -811,6 +1069,7 @@
         if (sP && d === sP[1]) k.classList.add('key-pvw');
       });
       pgmTile.classList.remove('fading');
+      if (sG && typeof postPgm === 'function') postPgm('ch' + sG[1]);
     }
     if (auto) {
       pgmTile.classList.add('fading');
@@ -824,21 +1083,90 @@
   document.querySelector('.sc-cut').addEventListener('click', function () {
     if (pvwFrame.src.indexOf('/ch') === -1) return;
     applySwap(false);
+    if (macroActive) {
+      macroBtns.forEach(function (b) { b.classList.remove('macro-live'); });
+      var active = document.querySelector('.sc-macro[data-macro="' + macroActive + '"]');
+      if (active) active.classList.add('macro-live');
+    }
   });
 
   document.querySelector('.sc-auto').addEventListener('click', function () {
     if (pvwFrame.src.indexOf('/ch') === -1) return;
     applySwap(true);
+    if (macroActive) {
+      macroBtns.forEach(function (b) { b.classList.remove('macro-live'); });
+      var active = document.querySelector('.sc-macro[data-macro="' + macroActive + '"]');
+      if (active) active.classList.add('macro-live');
+    }
+  });
+
+  // ── MACRO buttons: direct cut to program + override HDMI output ───────────
+  const macroBtns = Array.prototype.slice.call(document.querySelectorAll('.sc-macro[data-macro]'));
+  let macroActive = null;
+
+  async function pushHdmiAll(ch) {
+    try {
+      const mons = await fetch('/api/output/monitors').then(function (r) { return r.json(); });
+      const list = mons.monitors || [];
+      for (var i = 0; i < list.length && i < 4; i++) {
+        await fetch('/api/output/push', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ channel: ch, monitor: list[i].index })
+        });
+        await new Promise(function (r) { setTimeout(r, 300); });
+      }
+    } catch (e) {}
+  }
+
+  macroBtns.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var n = btn.getAttribute('data-macro');
+      if (n === '0') {
+        macroActive = null;
+        macroBtns.forEach(function (b) { b.classList.remove('macro-live'); });
+        fetch('/api/macro/set', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ channel: '' }) });
+        toast('Macro cleared — HDMI restored to assigned channels');
+        return;
+      }
+      macroBtns.forEach(function (b) { b.classList.remove('macro-live'); });
+      btn.classList.add('macro-live');
+      macroActive = n;
+      fetch('/api/macro/set', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ channel: n })
+      });
+      pushHdmiAll('ch' + n);
+      toast('Macro ' + n + ' → ALL HDMI (CH' + n + ')');
+    });
   });
 
   // ── Source button: assign input to the selected channel ───────────────────
-  const srcDisplay = { hdmi: 'HDMI', ndi: 'NDI', direct: 'Direct' };
+  const srcDisplay = { hdmi: 'HDMI', direct: 'Direct' };
   const srcAssign = {};
   const tileLabels = {};
   document.querySelectorAll('.mv-inputs .mv-tile').forEach(function (t) {
     const mT = t.className.match(/mv-(\d+)/);
     if (mT) tileLabels[mT[1]] = t.querySelector('.mv-label').textContent.trim();
   });
+  const tileFrames = {};
+  document.querySelectorAll('.mv-inputs .mv-tile').forEach(function (t) {
+    const mT = t.className.match(/mv-(\d+)/);
+    if (mT) tileFrames[mT[1]] = t.querySelector('iframe');
+  });
+  const srcDirect = {};
+  const srcHdmi = {};
+
+  const tileSrc = {};
+  Object.keys(tileFrames).forEach(function (n) { tileSrc[n] = tileFrames[n].src; });
+
+  function applyTileFeeds() {
+    Object.keys(tileFrames).forEach(function (n) {
+      const a = srcAssign[n];
+      let url = null;
+      if (a === 'direct' && srcDirect[n]) url = directFeedUrl(srcDirect[n].host, srcDirect[n].out);
+      tileFrames[n].src = url || tileSrc[n];
+    });
+  }
 
   function selectedChannel() {
     const mS = pvwFrame.src.match(/\/ch(\d+)/);
@@ -851,6 +1179,28 @@
     document.querySelectorAll('.sc-source-opt').forEach(function (o) {
       o.classList.toggle('assigned', srcAssign[n] === o.getAttribute('data-src'));
     });
+    const isDir = srcAssign[n] === 'direct';
+    const dirBox = $('scDirectBox');
+    if (dirBox) dirBox.style.display = isDir ? '' : 'none';
+    if (isDir && dirBox) {
+      const d = srcDirect[n];
+      const ipEl = $('scDirectIp');
+      const hintEl = $('scDirectHint');
+      if (ipEl) ipEl.value = hostLabel(directState.host || ((d && d.host) || ''));
+      if (hintEl) {
+        const cur = pendingDirect || (d && d.host) || '';
+        hintEl.textContent = cur
+          ? 'Connected: ' + hostLabel(cur) + ' — i-assign sa Channel Assign (sa ibaba).'
+          : 'Type the IP of the LIGHT WORSHIP app that sends the input.';
+      }
+    }
+    const isHdi = srcAssign[n] === 'hdmi';
+    const hdBox = $('scHdmiBox');
+    if (hdBox) hdBox.style.display = isHdi ? '' : 'none';
+    if (isHdi && hdBox && hdmiLoadedFor !== n) {
+      hdmiLoadedFor = n;
+      loadHdmiSources();
+    }
   }
 
   $('scSourceBtn').onclick = function () {
@@ -865,18 +1215,327 @@
       const n = selectedChannel() || '1';
       const v = o.getAttribute('data-src');
       srcAssign[n] = (srcAssign[n] === v) ? null : v;
-      if (n in tileLabels) {
-        const lab = document.querySelector('.mv-inputs .mv-' + n + ' .mv-label');
-        if (lab) lab.textContent = tileLabels[n] + (srcAssign[n] ? ' · ' + srcDisplay[srcAssign[n]] : '');
-      }
+      updateSrcLabels();
+      applyTileFeeds();
       paintSourcePanel();
     });
   });
 
-  // ── Audio monitor (simulated) ─────────────────────────────────────────────
+  applyTileFeeds();
+
+  // ── Direct app: accept the sender's network address ────────────────────────
+  function normalizeAddress(v) {
+    v = (v || '').trim();
+    if (!v) return null;
+    if (/^https?:\/\//i.test(v)) {
+      try { v = new URL(v).host; } catch (e) { return null; }
+    } else {
+      v = v.replace(/^\/\//, '').split('/')[0];
+    }
+    if (/:\d{1,5}$/.test(v)) return v;                       // ip:port
+    if (/^[a-zA-Z0-9][a-zA-Z0-9._-]*$/.test(v)) return v;    // plain ip
+    return null;
+  }
+
+  function directFeedUrl(host, out) {
+    if (!host) return null;
+    if (host.indexOf('://') === -1) host = 'http://' + host;
+    return host.replace(/\/+$/, '') + '/ch' + (out || 1);
+  }
+
+  function hostLabel(u) {
+    if (!u) return '';
+    return u.replace(/^[a-z]+:\/\//i, '').replace(/\/+$/, '');
+  }
+
+  function updateSrcLabels() {
+    Object.keys(tileLabels).forEach(function (n) {
+      const lab = document.querySelector('.mv-inputs .mv-' + n + ' .mv-label');
+      if (!lab) return;
+      if (srcAssign[n] === 'direct' && srcDirect[n]) {
+        lab.textContent = tileLabels[n] + ' · Direct ' + hostLabel(srcDirect[n].host) + ' OUT' + srcDirect[n].out;
+      } else if (srcAssign[n] === 'hdmi' && srcHdmi[n]) {
+        const nm = srcHdmi[n].name && srcHdmi[n].name.trim();
+        lab.textContent = tileLabels[n] + ' · HDMI ' + (nm || ('#' + srcHdmi[n].index));
+      } else if (srcAssign[n]) {
+        lab.textContent = tileLabels[n] + ' · ' + srcDisplay[srcAssign[n]];
+      } else {
+        lab.textContent = tileLabels[n];
+      }
+    });
+  }
+
+  let pendingDirect = null;
+  let pendingOut = 1;
+  let directTarget = '1';
+  const directState = { base: null, host: null };
+
+  function probeBase(cands, onResult, onTry) {
+    if (!cands.length) return onResult(null);
+    const b = cands.shift();
+    if (onTry) onTry(b);
+    const pr = document.createElement('iframe');
+    pr.style.display = 'none';
+    let done = false;
+    const fin = function (ok) {
+      if (done) return;
+      done = true;
+      clearTimeout(t);
+      if (pr.parentNode) pr.parentNode.removeChild(pr);
+      if (ok) onResult(b); else probeBase(cands, onResult, onTry);
+    };
+    const t = setTimeout(function () { fin(false); }, 3000);
+    pr.onload = function () { fin(true); };
+    pr.onerror = function () { fin(false); };
+    pr.src = b + '/ch1';
+    document.body.appendChild(pr);
+  }
+
+  function connectDirect(addrText) {
+    const host = normalizeAddress(addrText);
+    if (!host) {
+      toast('Enter a valid IP, e.g. 192.168.1.100 or 192.168.1.100:5001');
+      return;
+    }
+    const withPort = /:\d{1,5}$/.test(host);
+    const cands = withPort
+      ? ['http://' + host]
+      : ['http://' + host, 'http://' + host + ':5001', 'http://' + host + ':5070', 'http://' + host + ':5890', 'http://' + host + ':8080'];
+    toast('Kinolokol ang ' + host + '…');
+    probeBase(cands, function (base) {
+      if (base) {
+        const mNow = pvwFrame.src.match(/\/ch(\d+)/);
+        directTarget = mNow ? mNow[1] : '1';
+        pendingDirect = base;
+        pendingOut = 1;
+        directState.host = host;
+        directState.base = base;
+        paintSourcePanel();
+        refreshAssignList();
+        toast('Connected: ' + base + ' — piliin ang output at i-assign');
+      } else {
+        directState.base = null;
+        directState.host = null;
+        pendingDirect = null;
+        refreshAssignList();
+        paintSourcePanel();
+        toast('Hindi ma-reach ang ' + host + ' (sinubukan: 80, 5001, 5070, 5890, 8080) — bukas ba ang sender app?');
+      }
+    }, function (tryBase) {
+      toast('Sinusubukan ang ' + tryBase + ' …');
+    });
+  }
+
+  if ($('scDirectGo')) $('scDirectGo').onclick = function () {
+    if ($('scDirectIp')) connectDirect($('scDirectIp').value);
+  };
+  if ($('scAsgGo')) $('scAsgGo').onclick = function () {
+    if ($('scAsgIp')) connectDirect($('scAsgIp').value);
+  };
+  if ($('scAsgIp')) $('scAsgIp').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && $('scAsgGo')) $('scAsgGo').click();
+  });
+  if ($('scDirectIp')) $('scDirectIp').addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter' && $('scDirectGo')) $('scDirectGo').click();
+  });
+
+  // ── HDMI: auto-detect inputs, operator assigns to channel ─────────────────
+  let hdmiLoadedFor = null;
+
+  function pickHdmi(source) {
+    const local = directTarget;
+    srcAssign[local] = 'hdmi';
+    srcHdmi[local] = source;
+    updateSrcLabels();
+    applyTileFeeds();
+    paintSourcePanel();
+    const nm = source.name && source.name.trim();
+    toast('Assigned HDMI ' + (nm || ('#' + source.index)) + ' to CH' + local);
+  }
+
+  async function loadHdmiSources() {
+    const list = $('scHdmiList');
+    if (!list) return;
+    list.innerHTML = '<div class="cp-note">Detecting…</div>';
+    try {
+      const r = await fetch('/api/live/sources?t=' + Date.now());
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const srcs = (j.sources || []).slice(0, 10);
+      $('scHdmiCount').textContent = srcs.length + ' found';
+      list.innerHTML = '';
+      if (!srcs.length) {
+        list.innerHTML = '<div class="cp-note">No HDMI input detected — plug in a capture card / camera.</div>';
+        return;
+      }
+      srcs.forEach(function (s) {
+        const b = document.createElement('button');
+        b.className = 'sc-out';
+        b.type = 'button';
+        const nm = s.name && s.name.trim();
+        b.textContent = nm || ('HDMI input #' + s.index);
+        b.title = '#' + s.index + ' · ' + s.w + 'x' + s.h;
+        const local = directTarget;
+        if (srcAssign[local] === 'hdmi' && srcHdmi[local] && srcHdmi[local].index === s.index) {
+          b.classList.add('picked');
+        }
+        b.onclick = function () { pickHdmi(s); };
+        list.appendChild(b);
+      });
+    } catch (e) {
+      list.innerHTML = '<div class="cp-note">Detection failed: ' + e.message + '</div>';
+    }
+  }
+
+  $('scHdmiRescan').onclick = function () {
+    hdmiLoadedFor = null;
+    loadHdmiSources();
+  };
+
+  // ── Channel Assign: pumili ng natanggap na input at italaga sa channel ─────
+  let assignType = 'hdmi';
+
+  function assignInput(type, payload, label) {
+    const local = directTarget;
+    srcAssign[local] = type;
+    if (type === 'hdmi') srcHdmi[local] = payload;
+    if (type === 'direct') srcDirect[local] = { host: payload.host, out: payload.out };
+    updateSrcLabels();
+    applyTileFeeds();
+    toast('Assigned ' + label + ' to CH' + local);
+  }
+
+  async function renderHdmiList() {
+    const list = $('scAssignList');
+    list.innerHTML = '<div class="cp-note">Detecting…</div>';
+    try {
+      const r = await fetch('/api/live/sources?t=' + Date.now());
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      const j = await r.json();
+      const srcs = (j.sources || []).slice(0, 10);
+      $('scAssignHint').textContent = srcs.length ? '' : 'Walang HDMI input na natanggap.';
+      list.innerHTML = '';
+      srcs.forEach(function (s) {
+        const b = document.createElement('button');
+        b.className = 'sc-out';
+        b.type = 'button';
+        const nm = s.name && s.name.trim();
+        b.textContent = nm || ('HDMI input #' + s.index);
+        b.title = '#' + s.index + ' · ' + s.w + 'x' + s.h;
+        const local = directTarget;
+        if (srcAssign[local] === 'hdmi' && srcHdmi[local] && srcHdmi[local].index === s.index) b.classList.add('picked');
+        b.onclick = function () {
+          assignInput('hdmi', s, 'HDMI ' + (nm || ('#' + s.index)));
+          refreshAssignList();
+        };
+        list.appendChild(b);
+      });
+    } catch (e) {
+      list.innerHTML = '';
+      $('scAssignHint').textContent = 'Detection failed: ' + e.message;
+    }
+  }
+
+  function renderDirectList() {
+    const list = $('scAssignList');
+    list.innerHTML = '';
+    let host = pendingDirect;
+    if (!host) {
+      for (const k in srcDirect) { if (srcDirect[k]) { host = srcDirect[k].host; break; } }
+    }
+    const box = $('scAsgDirectBox');
+    if (!host) {
+      if (box) box.style.display = '';
+      $('scAssignHint').textContent = '';
+      return;
+    }
+    if (box) box.style.display = 'none';
+    $('scAssignHint').textContent = 'Sender: ' + hostLabel(directState.host || host);
+    for (let i = 1; i <= 10; i++) {
+      const b = document.createElement('button');
+      b.className = 'sc-out';
+      b.type = 'button';
+      b.textContent = 'OUT' + i;
+      const local = directTarget;
+      if (srcAssign[local] === 'direct' && srcDirect[local] && srcDirect[local].out === i) b.classList.add('picked');
+      b.onclick = function () {
+        assignInput('direct', { host: host, out: i }, 'Direct ' + hostLabel(directState.host || host) + ' OUT' + i);
+        refreshAssignList();
+      };
+      list.appendChild(b);
+    }
+  }
+
+  function refreshAssignList() {
+    updateDestRow();
+    const box = $('scAsgDirectBox');
+    if (box) box.style.display = (assignType === 'direct' && !pendingDirect && !('direct' in srcAssign)) ? '' : 'none';
+    if (assignType === 'hdmi') { $('scAssignTitle').textContent = 'HDMI inputs'; renderHdmiList(); }
+    else { $('scAssignTitle').textContent = 'Direct outputs'; renderDirectList(); }
+  }
+
+  function updateDestRow() {
+    const cur = directTarget || '1';
+    document.querySelectorAll('#scDestRow [data-dch]').forEach(function (b) {
+      b.classList.toggle('active', b.dataset.dch === cur);
+    });
+  }
+
+  (function buildDestRow() {
+    const row = $('scDestRow');
+    if (!row) return;
+    for (let i = 1; i <= 10; i++) {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = 'CH' + i;
+      b.dataset.dch = i;
+      b.onclick = function () {
+        directTarget = String(i);
+        updateDestRow();
+        refreshAssignList();
+      };
+      row.appendChild(b);
+    }
+    updateDestRow();
+  })();
+
+  $('scAssignClear').onclick = function () {
+    const ch = directTarget || '1';
+    if (!srcAssign[ch]) {
+      toast('CH' + ch + ' walang input na naka-assign.');
+      return;
+    }
+    delete srcAssign[ch];
+    delete srcHdmi[ch];
+    delete srcDirect[ch];
+    updateSrcLabels();
+    applyTileFeeds();
+    paintSourcePanel();
+    refreshAssignList();
+    toast('Inalis ang input sa CH' + ch);
+  };
+
+  $('scAssignBtn').onclick = function () {
+    const p = $('scAssignPanel');
+    const open = p.style.display !== 'none';
+    p.style.display = open ? 'none' : '';
+    if (!open) refreshAssignList();
+  };
+
+  [{ id: 'scAssignHdmi', t: 'hdmi' }, { id: 'scAssignDirect', t: 'direct' }].forEach(function (x) {
+    $(x.id).onclick = function () {
+      assignType = x.t;
+      document.querySelectorAll('#scAssignPanel [data-atype]').forEach(function (b) {
+        b.classList.toggle('active', b.getAttribute('data-atype') === x.t);
+      });
+      refreshAssignList();
+    };
+  });
+
+  // ── Audio monitor (real levels) ───────────────────────────────────────────
   const aud = {
-    in:  { muted: false, l: 0, r: 0 },
-    spk: { muted: false, l: 0, r: 0 },
+    in:  { muted: false, l: 0, r: 0, ok: true },
+    spk: { muted: false, l: 0, r: 0, ok: true },
   };
 
   function audSetMeter(prefix, ch, lvl) {
@@ -887,6 +1546,8 @@
   }
 
   function audPaint() {
+    if (aud.in.muted) { aud.in.l = 0; aud.in.r = 0; }
+    if (aud.spk.muted) { aud.spk.l = 0; aud.spk.r = 0; }
     audSetMeter('In', 'L', aud.in.l);
     audSetMeter('In', 'R', aud.in.r);
     audSetMeter('Spk', 'L', aud.spk.l);
@@ -894,7 +1555,8 @@
     ['in', 'spk'].forEach(function (g) {
       const st = document.getElementById('aud' + (g === 'in' ? 'In' : 'Spk') + 'State');
       const muted = aud[g].muted;
-      if (st) { st.textContent = muted ? 'MUTED' : 'ACTIVE'; st.className = 'aud-gstate' + (muted ? ' muted' : ''); }
+      const cur = muted ? 'MUTED' : (aud[g].ok ? 'ACTIVE' : 'OFFLINE');
+      if (st) { st.textContent = cur; st.className = 'aud-gstate' + (muted ? ' muted' : ''); }
       document.getElementById('aud' + (g === 'in' ? 'In' : 'Spk') + 'Mute').classList.toggle('active-mute', muted);
     });
   }
@@ -919,16 +1581,30 @@
   $('audSpkReset').onclick = function () { audReset('Spk'); };
 
   setInterval(function () {
-    ['in', 'spk'].forEach(function (g) {
-      if (!aud[g].muted) {
-        aud[g].l = Math.min(100, Math.round(30 + Math.random() * 70));
-        aud[g].r = Math.min(100, Math.round(25 + Math.random() * 72));
-      } else {
-        aud[g].l = 0;
-        aud[g].r = 0;
-      }
-    });
-    audPaint();
+    if (aud.in.muted) { aud.in.l = 0; aud.in.r = 0; }
+    if (aud.spk.muted) { aud.spk.l = 0; aud.spk.r = 0; }
+    fetch('/api/audio/levels?t=' + Date.now())
+      .then(function (r) { return r.json(); })
+      .then(function (j) {
+        aud.in.ok = j.input_ok !== false && j.input_ok !== undefined;
+        aud.spk.ok = j.speaker_ok !== false && j.speaker_ok !== undefined;
+        if (!aud.in.muted) {
+          aud.in.l = aud.in.ok ? Math.min(100, Math.max(0, Math.round(j.input || 0))) : 0;
+          aud.in.r = aud.in.l;
+        }
+        if (!aud.spk.muted) {
+          aud.spk.l = aud.spk.ok ? Math.min(100, Math.max(0, Math.round(j.speaker || 0))) : 0;
+          aud.spk.r = aud.spk.l;
+        }
+        audPaint();
+      })
+      .catch(function () {
+        aud.in.ok = false;
+        aud.spk.ok = false;
+        aud.in.l = 0; aud.in.r = 0;
+        aud.spk.l = 0; aud.spk.r = 0;
+        audPaint();
+      });
   }, 450);
 })();
 </script>

@@ -6,12 +6,21 @@
   "cloud_enabled": false,
   "cloud_url": "",
   "cloud_token": "",
-  "enable_self_update": true,
+  "enable_self_update": false,
   "update_url": "",
   "log_level": "INFO",
   "media_video_budget_gb": 2,
   "media_image_budget_gb": 1,
   "media_disk_reserve_gb": 1,
   "media_warn_percent": 80,
-  "media_video_dir": ""
+  "media_video_dir": "",
+  "projection_monitor": {
+    "index": 1,
+    "x": -1920,
+    "y": 0,
+    "width": 1920,
+    "height": 1200,
+    "primary": false,
+    "label": "Monitor 2"
+  }
 }

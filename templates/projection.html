@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LIGHT WORSHIP APP — {{ channel }}</title>
+  <title>LIGHT STREAM SWITCH APP — {{ channel }}</title>
   <style id="themeVars">
     /* Default theme (Navy/Teal) — inline so it works without the static server
        serving individual theme CSS files. Each theme sets the same variables. */
@@ -459,6 +459,8 @@
 <div id="proj-content">
 
 <div id="channel-badge">{{ channel }}</div>
+
+<style>#waiting { display: none !important; } #slide { background: #000 !important; } #channel-badge { display: none !important; }</style>
 
 <div id="custom-bg" data-bg="{{ (custom_theme.slots[custom_theme.active] or '') }}" {% if custom_theme.slots and custom_theme.slots[custom_theme.active] %}data-hasbg="1"{% endif %}></div>
 

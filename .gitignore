@@ -12,3 +12,5 @@ recovery_build/
 stage_*/
 clean_templates/
 LeiturgiaServer.original.exe
+tools/ffmpeg/*.exe
+tools/ffmpeg/*.zip
