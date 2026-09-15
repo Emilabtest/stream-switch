@@ -63,7 +63,7 @@ def main():
 
     # Create native window
     window = webview.create_window(
-        title="LIGHT STREAM SWITCH APP",
+        title="LIGHT STREAM SWITCH",
         url=URL,
         width=1400,
         height=900,
